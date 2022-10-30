@@ -1,0 +1,305 @@
+GET http://localhost:5000/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIwMDAwMDEiLCJpZF9lbXAiOiIwMDAwMDEiLCJwcm9maWxlX25hbWUiOiJhZG1pbmlzdHJhdG9yIiwiZW1haWwiOiJhZG1pbkBhcGV4Y2lyY3VpdC5jb20iLCJpYXQiOjE2NTY0MzgyNzYsImV4cCI6MTY1NjQzODI5Nn0.Q4nCtNw8nNNVvnhd_1sSSicBMkArzm9pdHb3d27CZZo
+
+###
+GET http://localhost:5000/token
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiIwMDAwMDEiLCJpZF9lbXAiOiIwMDAwMDEiLCJwcm9maWxlX25hbWUiOiJhZG1pbmlzdHJhdG9yIiwiZW1haWwiOiJhZG1pbkBhcGV4Y2lyY3VpdC5jb20iLCJpYXQiOjE2NTY0MzgyNzYsImV4cCI6MTY1NjQzODI5Nn0.Q4nCtNw8nNNVvnhd_1sSSicBMkArzm9pdHb3d27CZZo
+
+
+###
+POST http://localhost:5000/users 
+content-type: application/json
+
+{
+    "id_emp": "6400002",
+    "profile_name": "dr_kanda",
+    "email": "dr_kanda@gmail.com",
+    "password": "1234",
+    "confPassword": "1234"
+}
+
+###
+POST http://localhost:5000/login 
+content-Type: application/json
+
+{
+    
+    "name": "admin@apexcircuit.com",
+    "password": "@1234"
+}
+
+# admin@apexcircuit.com
+
+
+###
+GET http://localhost:5000/getAllerp_prom
+
+###
+DELETE  http://localhost:5000/logout
+
+###
+POST http://localhost:5000/getnotes
+content-type: application/json
+
+{
+    "id_user" : "IT6400009"
+}
+
+###
+POST http://localhost:5000/notes 
+content-type: application/json
+
+{
+    "id_profile": 1,
+    "description": "<p>new data</p>"
+}
+
+###
+POST http://localhost:5000/createnote
+content-type: application/json
+
+{
+    "id_profile": "6400009-001",
+    "description": "test"
+}
+
+###
+GET http://localhost:5000/getDataJob
+
+
+###
+POST http://localhost:5000/getItemOption
+content-type: application/json
+
+{
+     "id_option": ["IT000001-000002"]
+}
+
+###
+GET http://localhost:5000/getTeamMember
+
+###
+GET http://localhost:5000/getNotebook_center
+
+###
+GET http://localhost:5000/getData_book_round
+
+###
+GET http://localhost:5000/getDataBookCurrentDate
+
+###
+GET http://localhost:5000/getDataBook
+
+###
+POST http://localhost:5000/getDataBookCut
+
+###
+POST http://localhost:5000/getDataJobCount
+
+### 
+GET http://localhost:5000/getDataDevice
+
+
+###
+GET http://localhost:5000/getEmpProfile
+
+###
+GET http://localhost:5000/getDataAllEmpIT
+
+###
+GET http://localhost:5000/getUserAccount
+
+###
+GET http://localhost:5000/getUserAccountForSchedu
+
+
+###
+get http://localhost:5000/LastJob
+
+###
+POST http://localhost:5000/CreateJob
+content-type: application/json
+
+{
+    "job_no":"RQ2202130000x",
+    "appove_by":"IT6400010" ,
+    "assign_by":"IT6400009",
+    "assign_detail":"xxxxx" ,
+    "open_date": "2022-04-12 08:00:00",
+    "start_date":"2022-04-12 08:00:00",
+    "target_date":"2022-04-12 08:00:00",
+    "close_date":"2022-04-12 08:00:00" ,
+    "rootcase": "IT000001-000001",
+    "rootitem": "IT000001-000005",
+    "solutionnote":"okokokokokok",
+    "status":"finish",
+    "tikket_no":"tk220213-00000p"
+}
+
+
+###
+POST http://localhost:5000/getDataBookCheckForAdding
+content-type: application/json
+
+{
+    "dateSCH": "2022-10-13"
+}
+
+###
+get http://localhost:5000/LastTikket
+
+###
+POST http://localhost:5000/CreateTikket
+content-type: application/json
+
+{
+    "tikket_no":"tk220213-00000p",
+    "requestor":"6400001-001" ,
+    "tel":"789",
+    "service_type":"IT000001-000001" ,
+    "service_option": "IT000001-000002",
+    "tikket_date":"2022-04-12 08:00:00",
+    "status":"approve" ,
+    "review_by": "IT6400010"
+}
+
+###
+POST  http://localhost:5000/getDataTikket
+content-type: application/json
+
+{
+     "status": ["approve","waite","reject"],
+     "createJob_by": null
+}
+
+###
+get http://localhost:5000/getDataJob
+
+###
+get http://localhost:5000/getDataJobForSchedu
+
+
+###
+POST  http://localhost:5000/getDataJobCutOfUser
+content-type: application/json
+
+{
+    "status": ["pending","inprogress","delay","finish"],
+    "assign": ["IT6400009"]
+}
+
+###
+POST  http://localhost:5000/getDataJobCut
+content-type: application/json
+
+{
+    "tikket_no": ["tk220815-000001"]
+}
+
+###
+POST  http://localhost:5000/getDataTikketCut
+content-type: application/json
+
+{
+    "tikket_no" : ["tk220815-000001"],
+    "status": ["approve","waite","reject"]
+}
+
+###
+POST  http://localhost:5000/getProfile
+content-type: application/json
+
+{
+     "id_emp": ["6400011",]
+}
+
+###
+get  http://localhost:5000/getChartDataTikket
+
+###
+POST  http://localhost:5000/getProfileCut
+content-type: application/json
+
+{
+    "id_emp": ["000001", "6400009"]
+}
+
+###
+get http://localhost:5000/getDataProfile  
+
+###
+get http://localhost:5000/getDataAllEmp
+
+###
+get http://localhost:5000/getServiceType
+
+
+###
+get http://localhost:5000/getServiceOption
+
+###
+get http://localhost:5000/getAllItem
+
+###
+get http://localhost:5000/getDataAllServiceDetail 
+
+
+###
+POST http://localhost:5000/geterp_prom 
+content-type: application/json
+
+{
+     "id_login": ["IT000001"]
+}
+
+###
+GET http://localhost:5000/getAllerp_prom 
+
+###
+get  http://localhost:5000/getOptionItems
+
+###
+POST  http://localhost:5000/RemoveServiceOption
+content-type: application/json
+
+{
+     "id_option": "IT000001-000021"
+}
+
+###
+POST  http://localhost:5000/CreateServiceOption
+content-type: application/json
+
+{
+    "id_option" : "IT000001-000021",
+    "title" : "xxxxxxxxxxxx",
+    "whoAppr" : "manager",
+    "status" : 1,	
+    "id_type" : "IT000001-000001"
+}
+
+###
+POST http://localhost:5000/UpdateAllDetailServiceOption
+content-type: application/json
+
+{
+    "id_option": "IT000001-000021",
+    "title": "testtestest",
+    "status": 1,
+    "whoAppr": "manager",
+    "id_type": "IT000001-000002"
+}
+
+###
+GET http://localhost:5000/formatSchedudata 
+
+###
+GET http://localhost:5000/getUserITService
+
+
+# SELECT `data_emp`.`id_emp`, `data_emp`.`gender`, `data_emp`.`emp_name`, `data_emp`.`emp_nameEng`, 
+# `data_emp`.`birth`, `data_emp`.`dept`, `data_emp`.`section`, `data_emp`.`position`, `data_emp`.`level`,
+# `data_emp`.`type`, `data_emp`.`createdAt`, `data_emp`.`updatedAt`, `departments`.`id` AS `departments.id`, 
+# `departments`.`dept` AS `departments.dept`, `departments`.`createdAt` AS `departments.createdAt`, 
+# `departments`.`updatedAt` AS `departments.updatedAt`FROM `data_emp` AS `data_emp` 
+# INNER JOIN `department` AS `departments` ON `data_emp`.`dept` = `departments`.`id`;
