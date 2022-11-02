@@ -272,7 +272,7 @@ function ConfirmationDialogRaw(props) {
 
 function ConfirmationDialogRemoveJob(props) {
     
-  const { detailcanceljob, onCloseRemoveJobDialog, openConfirmationDialogRemoveJob, ...other } = props;
+  const { CancalJob, detailcanceljob, onCloseRemoveJobDialog, openConfirmationDialogRemoveJob, ...other } = props;
 
   const handleCancelDialog = () => {
     onCloseRemoveJobDialog();
@@ -280,29 +280,11 @@ function ConfirmationDialogRemoveJob(props) {
 
   const handleConfDialog = async(e) => {
     handleCancelDialog();
-
-    await axios.post('http://localhost:5000/CanceltaskJob', {
-      Tikket: detailcanceljob.Tikket,
+    CancalJob({
+      tikket_no: detailcanceljob.tikket_no,
       job_no: detailcanceljob.job_no,
       assign: detailcanceljob.assign,
-      assign_lavel: detailcanceljob.assign_lavel,
-
-    }).then((res) => {  
-
-      if( res.data.msg !== null) {
-        notify(
-          {
-              message: res.data.msg, 
-              width: 400,
-              position: {
-                  at: "top",
-                  my: "top",
-                  of: "#container"
-              }
-          },
-          'success', 800
-        );
-      }
+      level_assign: detailcanceljob.level_assign,
 
     })
 
@@ -363,7 +345,96 @@ function ConfirmationDialogRemoveJob(props) {
               >
               
                 <div> Cancel job no. &nbsp;{detailcanceljob.job_no}</div>
-                
+                <div> {detailcanceljob.level_assign === 1? "Assign to" : "Assistant" } &nbsp;{detailcanceljob.assign}</div>
+                <div> Assign level : &nbsp;{detailcanceljob.level_assign === 1? "Head" : "Member" }</div>
+
+              </Typography>
+               
+          </DialogContent>
+          <DialogActions>
+              <Stack spacing={1} direction="row" sx={{ p: 0 }}>
+              
+                <Button className="device-center-cancel"
+                  text="ตกลง"
+                  onClick={()=>handleConfDialog()}
+                />
+              </Stack>
+          </DialogActions>
+      </BootstrapDialog>
+  );
+}
+
+function ConfirmationDialogUpdateJob(props) {
+    
+  const { getDataScheduGetDataJobForSchedu, UpdateJob, detailUpdatejob, onCloseUpdateJobDialog, openConfirmationDialogUpdateJob, ...other } = props;
+
+  const handleCancelDialog = () => {
+    onCloseUpdateJobDialog();
+    getDataScheduGetDataJobForSchedu();
+  };
+
+  const handleConfDialog = async(e) => {
+    handleCancelDialog();
+    UpdateJob(detailUpdatejob)
+
+  };
+  
+  // useEffect(() => {
+
+  //   const GetDataJobDetail = async (tikketNo) => {
+  //       try {
+           
+  //           await axios.post('http://localhost:5000/getDataJobCut', {
+  //               tikket_no: tikketNo,
+
+  //           }).then((res) => {  
+  //               setDataJobDetailJOB(res.data);
+
+  //           })
+
+  //       } catch (error) {
+  //           console.log(error);
+  //       }
+  //   }
+
+  //   if(tikketNo !== "") {
+  //       GetDataJobDetail(tikketNo);
+  //   }
+
+  // },[tikketNo]);  
+
+  return (
+      <BootstrapDialog
+        onClose={handleCancelDialog}
+        aria-labelledby="customized-dialog-title"
+        sx={{ '& .MuiDialog-paper': { borderRadius: "15px", maxHeight: 435, width: 320 } }}
+
+        maxWidth="xs"
+        open={openConfirmationDialogUpdateJob}
+        {...other}
+      >
+          <BootstrapDialogTitle
+            sx={{ fontSize: 13, p: 1.5 }}
+            id="customized-dialog-title"
+            onClose={handleCancelDialog}
+          >
+                Confirm 
+          </BootstrapDialogTitle>
+          
+          <DialogContent dividers>
+              <Typography
+                  gutterBottom
+                  sx={{
+                      fontSize: 13,
+                      display: "flex",
+                      flexDirection:'column',
+                      alignItems: "center",
+                      justifyContent: "center"
+                  }}
+              >
+              
+                <div> Update job no. &nbsp;{detailUpdatejob.job_no}</div>
+
               </Typography>
                
           </DialogContent>
@@ -908,213 +979,258 @@ const ManageTaskJob = () => {
   }
 
   const onAppointmentFormOpening = (e) =>{
-    const startDate = new Date(e.appointmentData.startDate);
+    // const startDate = new Date(e.appointmentData.startDate);
 
     let userInfo = Query(UserIt).filter(['id', e.appointmentData.assign]).toArray()[0] || {};
     let DetailTikket;
+    let checkfilter = dataJob_it.filter((jobtime) => (jobtime.assign === e.appointmentData.assign) && isRangeOverlap([new Date(new Date(e.appointmentData.startDate).setSeconds(1)), new Date(e.appointmentData.endDate)],[new Date(new Date(jobtime.startDate).setSeconds(1)), new Date(jobtime.endDate)]))
 
+    // let toolbarItems = e.popup.option("toolbarItems"); 
+    
+    // toolbarItems.forEach(item=>{ 
+    //    if(item.options && item.options.text === "Done")
+    //        item.options.text = "ii";
+    // })
+
+    // e.popup.option("toolbarItems",[toolbarItems[1]]);
+    
     // if (!Utils.isValidAppointmentDate(startDate) ) {
     //   e.cancel = true;
     //   notifyDisableDate('ช่วงเวลาที่เลือก ไม่ได้อยู่ในช่วงเวลาที่สามารถมอบหมายงานได้');
     // }
 
-    if (new Date(e.appointmentData.endDate) < new Date()) {
-      e.cancel = true;
-      notifyDisableDate('ช่วงเวลาที่เลือก ไม่ได้อยู่ในช่วงเวลาที่สามารถมอบหมายงานได้');
-    }
 
-    let checkfilter = dataJob_it.filter((jobtime) => (jobtime.assign === e.appointmentData.assign) && isRangeOverlap([new Date(new Date(e.appointmentData.startDate).setSeconds(1)), new Date(e.appointmentData.endDate)],[new Date(new Date(jobtime.startDate).setSeconds(1)), new Date(jobtime.endDate)]))
-    if (checkfilter.length !== 0) {
-      e.cancel = true;
-      notifyDisableDate('ช่วงเวลาที่คุณเลือกชนกับเวลางานอื่น');
-    }
 
     const { form } = e;
 
-    if(datatikket.length > 0) {
-      form.updateData('service_options', datatikket[0].service_options[0].title);
-      form.updateData('tel', datatikket[0].tel);
-      form.updateData('section_req', datatikket[0].section_req);
-      form.updateData('approve_by', datatikket[0].review_by);
-      form.updateData('requestor', datatikket[0].account_users[datatikket[0].account_users.findIndex(object => { return object.id_user === datatikket[0].requestor })].name_user_eng);
+    if (new Date(e.appointmentData.endDate) < new Date() || checkfilter.length !== 0 )  {
+      // e.cancel = true;
+      let txtAlert;
+
+      if (new Date(e.appointmentData.endDate) < new Date()) {
+        txtAlert = 'ช่วงเวลาที่เลือก ไม่ได้อยู่ในช่วงเวลาที่สามารถมอบหมายงานได้'
+
+      } else if (checkfilter.length !== 0) {
+        txtAlert = 'ช่วงเวลาที่คุณเลือกชนกับเวลางานอื่น'
+
+      }
+      
+      form.option('items', [ 
+        {
+          label: {
+            text: 'ALERT !!!',
+          },
+          width: '100%',
+          colSpan: 2,
+  
+        },{
+
+          label: {
+            text: txtAlert,
+          },
+          width: '100%',
+          colSpan: 2,
+
+        } 
+      ])
+
+      if(e.popup.option("toolbarItems").length > 1) {
+        e.popup.option("toolbarItems", [e.popup.option("toolbarItems")[1]]);
+
+      }
+      
+      // notifyDisableDate('ช่วงเวลาที่เลือก ไม่ได้อยู่ในช่วงเวลาที่สามารถมอบหมายงานได้');
+      // notifyDisableDate('ช่วงเวลาที่คุณเลือกชนกับเวลางานอื่น');
+
+    } else {
+      
+        if(datatikket.length > 0) {
+          form.updateData('service_options', datatikket[0].service_options[0].title);
+          form.updateData('tel', datatikket[0].tel);
+          form.updateData('section_req', datatikket[0].section_req);
+          form.updateData('approve_by', datatikket[0].review_by);
+          form.updateData('requestor', datatikket[0].account_users[datatikket[0].account_users.findIndex(object => { return object.id_user === datatikket[0].requestor })].name_user_eng);
+
+        }
+
+        let ITtimefilter = dataJob_it.filter((jobtime) => (formatDate(e.appointmentData.startDate) === formatDate(jobtime.startDate)) && isRangeOverlap([new Date(new Date(e.appointmentData.startDate).setSeconds(1)), new Date(e.appointmentData.endDate)],[new Date(new Date(jobtime.startDate).setSeconds(1)), new Date(jobtime.endDate)]))
+        let newITtimefilter = UserIt.filter((it) => (ITtimefilter.findIndex(object => { return it.id === object.assign } ) === -1) && it.id !== userInfo.id)
+
+        
+        form.option('items', [
+          {
+            label: {
+              text: 'ASSIGN JOB',
+            },
+            width: '100%',
+            colSpan: 2,
+          },
+          {
+            name: 'assignDisplay',
+            label: {
+              text: 'Assign to',
+            },
+            editorType: 'dxSelectBox',
+            dataField: 'assign',
+            colSpan: 2,
+            width: '100%',
+            editorOptions: {
+              items: UserIt,
+              displayExpr: 'text',
+              valueExpr: 'id',
+              readOnly: true,
+              // onValueChanged(args) {
+              //   userInfo = dataJob_it[dataJob_it.findIndex(object => { return object.id === args.value })]
+              //   if(userInfo) {
+              //     form.updateData('requestor', userInfo.text);
+                
+              //   }
+              // },
+            },
+          },
+          {
+            name: 'assign_detail',
+            label: {
+              text: 'Assign Detail',
+            },
+            editorType: 'dxTextArea',
+            dataField: 'assign_detail',
+            colSpan: 2,
+            value:"",
+            height: 140
+          },
+          {
+            name: 'job_assistant',
+            label: {
+              text: 'Job Assistant',
+            },
+            editorType: 'dxTagBox',
+            dataField: 'job_assistant',
+            allowMultiple: true,
+            colSpan: 2,
+            width: '100%',
+            editorOptions: {
+              items: newITtimefilter,
+              displayExpr: 'text',
+              valueExpr: 'id',
+              value: null
+              // onValueChanged(args) {
+              //   userInfo = dataJob_it[dataJob_it.findIndex(object => { return object.id === args.value })]
+              //   if(userInfo) {
+              //     form.updateData('requestor', userInfo.text);
+                
+              //   }
+              // },
+            },
+          },
+          {
+            label: {
+              text: 'Request',
+            },
+            width: '100%',
+            colSpan: 2,
+          },
+          {
+            name: 'request',
+            label: {
+              text: 'Request No.',
+            },
+            editorType: 'dxSelectBox',
+            dataField: 'tikket_no',
+            editorOptions: {
+              items: datatikket,
+              displayExpr: 'tikket_no',
+              valueExpr: 'tikket_no',
+              value: datatikket.length > 0 ? datatikket[0].tikket_no : '',
+              onValueChanged(args) {
+                DetailTikket = datatikket[datatikket.findIndex(object => { return object.tikket_no === args.value })]
+                // console.log(DetailTikket);
+                if(args.value !== '' && datatikket.length > 0 && DetailTikket) {
+                  form.updateData('service_options', DetailTikket.service_options[0].title);
+                  form.updateData('tel', DetailTikket.tel);
+                  form.updateData('section_req', DetailTikket.section_req);
+                  form.updateData('approve_by', DetailTikket.review_by);
+                  form.updateData('requestor', DetailTikket.account_users[DetailTikket.account_users.findIndex(object => { return object.id_user === DetailTikket.requestor })].name_user_eng);
+                
+                }
+              },
+            },
+          },
+          {
+            name: 'requestor',
+            label: {
+              text: 'Requestor',
+            },
+            editorType: 'dxTextBox',
+            dataField: 'requestor',
+            editorOptions: {
+              readOnly: true,
+            
+            },
+          },
+          {
+            name: 'service_options',
+            label: {
+              text: 'Service',
+            },
+            editorType: 'dxTextBox',
+            dataField: 'service_options',
+            editorOptions: {
+              readOnly: true,
+            
+            },
+          }, 
+          {
+            name: 'section_req',
+            label: {
+              text: 'Section',
+            },
+            editorType: 'dxTextBox',
+            dataField: 'section_req',
+            editorOptions: {
+              readOnly: true,
+            
+            },
+          },
+          {
+            label: {
+              text: 'Deadline',
+            },
+            width: '100%',
+            colSpan: 2,
+          },
+          {
+            name: 'startDate',
+            dataField: 'startDate',
+            editorType: 'dxDateBox',
+            editorOptions: {
+              width: '100%',
+              type: 'datetime',
+              readOnly: true,
+            
+            },
+          }, 
+          {
+            name: 'endDate',
+            dataField: 'endDate',
+            editorType: 'dxDateBox',
+            editorOptions: {
+              width: '100%',
+              type: 'datetime',
+              readOnly: true,
+            
+              // readOnly: true,
+            },
+          }
+
+        ]);
+
+        form.updateData('assign_by', localStorage.getItem('id_user_login'));
+        form.updateData('assignDisplay', userInfo.id);
+
+        form.itemOption("request", {isRequired: true, });
 
     }
-
-    let ITtimefilter = dataJob_it.filter((jobtime) => (formatDate(e.appointmentData.startDate) === formatDate(jobtime.startDate)) && isRangeOverlap([new Date(new Date(e.appointmentData.startDate).setSeconds(1)), new Date(e.appointmentData.endDate)],[new Date(new Date(jobtime.startDate).setSeconds(1)), new Date(jobtime.endDate)]))
-    let newITtimefilter = UserIt.filter((it) => (ITtimefilter.findIndex(object => { return it.id === object.assign } ) === -1) && it.id !== userInfo.id)
-
-    form.option('items', [
-      {
-        label: {
-          text: 'ASSIGN JOB',
-        },
-        width: '100%',
-        colSpan: 2,
-      },
-      {
-        name: 'assignDisplay',
-        label: {
-          text: 'Assign to',
-        },
-        editorType: 'dxSelectBox',
-        dataField: 'assign',
-        colSpan: 2,
-        width: '100%',
-        editorOptions: {
-          items: UserIt,
-          displayExpr: 'text',
-          valueExpr: 'id',
-          readOnly: true,
-          // onValueChanged(args) {
-          //   userInfo = dataJob_it[dataJob_it.findIndex(object => { return object.id === args.value })]
-          //   if(userInfo) {
-          //     form.updateData('requestor', userInfo.text);
-             
-          //   }
-          // },
-        },
-      },
-      {
-        name: 'assign_detail',
-        label: {
-          text: 'Assign Detail',
-        },
-        editorType: 'dxTextArea',
-        dataField: 'assign_detail',
-        colSpan: 2,
-        value:"",
-        height: 140
-      },
-      {
-        name: 'job_assistant',
-        label: {
-          text: 'Job Assistant',
-        },
-        editorType: 'dxTagBox',
-        dataField: 'job_assistant',
-        allowMultiple: true,
-        colSpan: 2,
-        width: '100%',
-        editorOptions: {
-          items: newITtimefilter,
-          displayExpr: 'text',
-          valueExpr: 'id',
-          value: null
-          // onValueChanged(args) {
-          //   userInfo = dataJob_it[dataJob_it.findIndex(object => { return object.id === args.value })]
-          //   if(userInfo) {
-          //     form.updateData('requestor', userInfo.text);
-             
-          //   }
-          // },
-        },
-      },
-      {
-        label: {
-          text: 'Request',
-        },
-        width: '100%',
-        colSpan: 2,
-      },
-      {
-        name: 'request',
-        label: {
-          text: 'Request No.',
-        },
-        editorType: 'dxSelectBox',
-        dataField: 'tikket_no',
-        editorOptions: {
-          items: datatikket,
-          displayExpr: 'tikket_no',
-          valueExpr: 'tikket_no',
-          value: datatikket.length > 0 ? datatikket[0].tikket_no : '',
-          onValueChanged(args) {
-            DetailTikket = datatikket[datatikket.findIndex(object => { return object.tikket_no === args.value })]
-            // console.log(DetailTikket);
-            if(args.value !== '' && datatikket.length > 0 && DetailTikket) {
-              form.updateData('service_options', DetailTikket.service_options[0].title);
-              form.updateData('tel', DetailTikket.tel);
-              form.updateData('section_req', DetailTikket.section_req);
-              form.updateData('approve_by', DetailTikket.review_by);
-              form.updateData('requestor', DetailTikket.account_users[DetailTikket.account_users.findIndex(object => { return object.id_user === DetailTikket.requestor })].name_user_eng);
-             
-            }
-          },
-        },
-      },
-      {
-        name: 'requestor',
-        label: {
-          text: 'Requestor',
-        },
-        editorType: 'dxTextBox',
-        dataField: 'requestor',
-        editorOptions: {
-          readOnly: true,
-        
-        },
-      },
-      {
-        name: 'service_options',
-        label: {
-          text: 'Service',
-        },
-        editorType: 'dxTextBox',
-        dataField: 'service_options',
-        editorOptions: {
-          readOnly: true,
-        
-        },
-      }, 
-      {
-        name: 'section_req',
-        label: {
-          text: 'Section',
-        },
-        editorType: 'dxTextBox',
-        dataField: 'section_req',
-        editorOptions: {
-          readOnly: true,
-        
-        },
-      },
-      {
-        label: {
-          text: 'Deadline',
-        },
-        width: '100%',
-        colSpan: 2,
-      },
-      {
-        name: 'startDate',
-        dataField: 'startDate',
-        editorType: 'dxDateBox',
-        editorOptions: {
-          width: '100%',
-          type: 'datetime',
-          readOnly: true,
-        
-        },
-      }, 
-      {
-        name: 'endDate',
-        dataField: 'endDate',
-        editorType: 'dxDateBox',
-        editorOptions: {
-          width: '100%',
-          type: 'datetime',
-          readOnly: true,
-        
-          // readOnly: true,
-        },
-      }
-
-    ]);
-
-    form.updateData('assign_by', localStorage.getItem('id_user_login'));
-    form.updateData('assignDisplay', userInfo.id);
-
-    form.itemOption("request", {isRequired: true, });
 
   }
 
@@ -1156,7 +1272,7 @@ const ManageTaskJob = () => {
             new_id = nameId + ( id_index + 1 ).toString()
           }
 
-          let status = false;
+          // let status = false;
 
           try {
               await axios.post('http://localhost:5000/CreateJob', {
@@ -1175,13 +1291,13 @@ const ManageTaskJob = () => {
                 tikket_no: e.tikket_no,
                 createJob_by: e.assign_by,
                 assign: e.assign,
-                job_assistant: e.job_assistant
+                job_assistant: typeof e.job_assistant !== 'undefined' ? e.job_assistant : []
 
               }).then((res) => {  
                   // console.log(res.data)
                 getDataScheduGetDataTikket();
                 getDataScheduGetDataJobForSchedu();
-                status = true;
+                // status = true;
 
                 notify(
                   {
@@ -1204,9 +1320,9 @@ const ManageTaskJob = () => {
   
           }
 
-          if(status) {
-            showUpdatedToast()
-          }
+          // if(status) {
+          //   showUpdatedToast()
+          // }
 
         }
 
@@ -1218,8 +1334,76 @@ const ManageTaskJob = () => {
     }
   }
 
+  const UpdateJob = async (e) => {
+
+
+    try {
+       await axios.post('http://localhost:5000/UpdateJob', {
+
+          job_no: e.job_no,
+          startDate: e.startDate,
+          endDate: e.endDate,
+
+       }).then(async (res) => {  
+
+        getDataScheduGetDataTikket();
+        getDataScheduGetDataJobForSchedu();
+
+        notify(
+          {
+              message: 'Updated complete', 
+              width: 400,
+              position: {
+                  at: "top",
+                  my: "top",
+                  of: "#container"
+              }
+          },
+          'success', 800
+        );
+
+      })
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
+  const CancalJob = async (e) => {
+    await axios.post('http://localhost:5000/CanceltaskJob', {
+      tikket_no: e.tikket_no,
+      job_no: e.job_no,
+      assign: e.assign,
+      level_assign: e.level_assign,
+
+    }).then((res) => {  
+
+      if( res.data.msg !== null) {
+        notify(
+          {
+              message: res.data.msg, 
+              width: 400,
+              position: {
+                  at: "top",
+                  my: "top",
+                  of: "#container"
+              }
+          },
+          'success', 800
+        );
+
+        getDataScheduGetDataTikket();
+        getDataScheduGetDataJobForSchedu();
+      }
+
+    })
+   
+  }
+
+  
   const funcUpdataTaskJob = async (e) => {
-    console.log(e)
+    // console.log(e)
 
     // if(new Date(e.appointmentData.startDate) < new Date() && new Date(e.appointmentData.endDate) <= new Date() ) {
     //   showErrorToast()
@@ -1230,9 +1414,17 @@ const ManageTaskJob = () => {
 
   }
 
+  // const funcUpdated = async (e) => {
+  //   console.log(e)
+
+  //   UpdateJob(e.appointmentData)
+    
+  // }
+
   const [openJobDetailDialog, setOpenJobDetailDialog] = useState(false);
   const [tikketNo, setTikketNo] = useState("");
   const [detailcanceljob, setdetailcanceljob] = useState([]);
+  const [detailUpdatejob, setdetailUpdatejob] = useState([]);
 
   const handleJobDetailDialog = (e) => {
     setOpenJobDetailDialog(true);
@@ -1268,6 +1460,18 @@ const ManageTaskJob = () => {
   const handleCloseRemoveJobDialog = () => {
     setConfirmationDialogRemoveJob(false);
     setdetailcanceljob([])
+  };
+  /////////////////////////////////////////////////////////////////////////
+  const [openConfirmationDialogUpdateJob, setConfirmationDialogUpdateJob] = useState(false);
+
+  const handleUpdateJobDialog = (e) => {
+    setConfirmationDialogUpdateJob(true);
+    setdetailUpdatejob(e.appointmentData);
+  };
+
+  const handleCloseUpdateJobDialog = () => {
+    setConfirmationDialogUpdateJob(false);
+    setdetailUpdatejob([])
   };
 
   const renderAppointment = (model) => {
@@ -1329,7 +1533,7 @@ const ManageTaskJob = () => {
                       <Box>
                         <Button className="device-center-Cancel"
                           icon="bx bx-task-x"
-                          onClick={()=>handleRemoveJobDialog({job_no: targetedAppointmentData.job_no, assign: targetedAppointmentData.assign, level_assign: targetedAppointmentData.level_assign})} 
+                          onClick={()=>handleRemoveJobDialog({tikket_no: targetedAppointmentData.tikket_no,job_no: targetedAppointmentData.job_no, assign: targetedAppointmentData.assign, level_assign: targetedAppointmentData.level_assign})} 
                           />
                         <Typography sx={{ fontSize: 10, textAlign:'center', marginTop: .5}}>Cancel</Typography>
                       </Box>
@@ -1367,7 +1571,7 @@ const ManageTaskJob = () => {
                           <Box>
                             <Button className="device-center-Cancel"
                               icon="bx bx-task-x"
-                              onClick={()=>handleRemoveJobDialog({job_no: targetedAppointmentData.job_no, assign: targetedAppointmentData.assign, level_assign: targetedAppointmentData.level_assign})} 
+                          onClick={()=>handleRemoveJobDialog({tikket_no: targetedAppointmentData.tikket_no,job_no: targetedAppointmentData.job_no, assign: targetedAppointmentData.assign, level_assign: targetedAppointmentData.level_assign})} 
                               />
                             <Typography sx={{ fontSize: 10, textAlign:'center', marginTop: .5}}>Cancel</Typography>
                           </Box>
@@ -1439,7 +1643,18 @@ const ManageTaskJob = () => {
                   openConfirmationDialogRemoveJob={openConfirmationDialogRemoveJob}
                   onCloseRemoveJobDialog={handleCloseRemoveJobDialog}
                   detailcanceljob={detailcanceljob}
+                  CancalJob={(e) => CancalJob(e)}
                 />
+
+                <ConfirmationDialogUpdateJob
+                  id="ringtone-menu"
+                  keepMounted
+                  openConfirmationDialogUpdateJob={openConfirmationDialogUpdateJob}
+                  onCloseUpdateJobDialog={handleCloseUpdateJobDialog}
+                  detailUpdatejob={detailUpdatejob}
+                  UpdateJob={(e) => UpdateJob(e)}
+                  getDataScheduGetDataJobForSchedu={() => getDataScheduGetDataJobForSchedu()}
+                />    
 
                     <React.Fragment>
                       <Scheduler
@@ -1447,9 +1662,9 @@ const ManageTaskJob = () => {
                           views={views}
                           editing={{allowAdding: true,
                             allowDeleting: false,
-                            allowResizing: false,
-                            allowDragging: false,
-                            allowUpdating: false}}
+                            allowResizing: true,
+                            allowDragging: true,
+                            allowUpdating: true}}
                           defaultCurrentView="Timeline Week"
                           showCurrentTimeIndicator={true}
                           shadeUntilCurrentTime={true}
@@ -1467,6 +1682,7 @@ const ManageTaskJob = () => {
                           appointmentComponent={renderAppointment}
                           onAppointmentFormOpening={onAppointmentFormOpening}
                           onAppointmentAdded={funcUpdataTaskJob}
+                          onAppointmentUpdated={handleUpdateJobDialog}
                           onAppointmentClick={onAppointmentClick}
                       >
                           <Editing allowDeleting={true} />

@@ -3,7 +3,7 @@ import {
     Login, Logout, getUserAccount, getServiceType, getServiceOption, AddNote, getNotes, CreateNote, getDataJobCutOfUser,
     getChartDataTikket, getDataJobCountCutOfUser, Job_CloseJOB, Job_OpenJOB, getRootitem, getRootcase,
     getDataTikketCut,getDataJob,getDataJobCut, getProfileCut ,UpdateProfile, getDataAllUser, getDataTikket, LastJob,
-    UpdateStatusTk, getDataTikketAll, UpdateItemTK, CreateJob, getOptionItems, getItemOption, getSec, getNotebook_center,
+    UpdateStatusTk, getDataTikketAll, UpdateItemTK, CreateJob, UpdateJob, CanceltaskJob,  getOptionItems, getItemOption, getSec, getNotebook_center,
     getData_book_round, getDataBookCurrentDate, getDataBook, getDataBookCheckForAdding, getTeamMember, getDataUserForDeviceCenter,
     updateDataBooking, deleteDataBooking, getUserAccountForSchedu,getDataJobForSchedu, Job_upDateAssignDetail
 
@@ -86,6 +86,8 @@ router.get('/getServiceOption', getServiceOption);
 // router.get('/getDataDevice', getDataDevice);
 // router.post('/getDataJobCount', getDataJobCount);
 router.post('/CreateJob', CreateJob);
+router.post('/UpdateJob', UpdateJob);
+router.post('/CanceltaskJob', CanceltaskJob);
 router.post('/Job_OpenJOB', Job_OpenJOB);
 router.post('/Job_CloseJOB', Job_CloseJOB);
 router.post('/Job_upDateAssignDetail', Job_upDateAssignDetail);

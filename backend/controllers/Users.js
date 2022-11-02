@@ -1257,8 +1257,6 @@ export const LastJob = async(req, res) => {
     }
 }
 
-
-
 export const CreateJob = async(req, res) => {
     
     const { job_no,approve_by, assign_detail, open_date,startDate, 
@@ -1316,6 +1314,50 @@ export const CreateJob = async(req, res) => {
         console.log(error);
     }
 }
+
+export const UpdateJob = async(req, res) => {
+    const   { 
+                job_no, startDate, endDate,
+
+            } = req.body;
+      
+    try {
+        
+        await Job.update({ 
+
+            startDate: startDate,
+            endDate: endDate,
+
+        },{
+            where:{
+                job_no : job_no
+            }
+
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// export const CancelJob = async(req, res) => {
+//     const   { 
+//                 job_no, assign
+
+//             } = req.body;
+      
+//     try {
+        
+//         await Schedul_task.destroy({
+//             where: {
+//                 [Sequelize.Op.and]: [{assign : assign }, {  job_no : job_no }]
+//             }
+//         });
+
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 export const LastTikket = async(req, res) => {
     try {
@@ -1464,10 +1506,10 @@ export const Job_upDateAssignDetail = async(req, res) => {
 }
 
 export const CanceltaskJob = async(req, res) => {
-    const { job_no, assign, assign_lavel  } = req.body;
+    const { tikket_no, job_no, assign, level_assign  } = req.body;
     try {
 
-        if(assign_lavel === 1) {
+        if(level_assign === 1) {
 
             await Schedul_task.destroy({
                 where: {
@@ -1478,6 +1520,12 @@ export const CanceltaskJob = async(req, res) => {
             await Job.destroy({ 
                 where: {
                     job_no: job_no
+                }
+            });
+
+            await Tikket.update({ createJob_by: null },{
+                where:{
+                    tikket_no : tikket_no
                 }
             });
 
@@ -1492,7 +1540,7 @@ export const CanceltaskJob = async(req, res) => {
 
         }
 
-        res.json({msg: "Cancel job no. " + job_no + " to ID " + assign + " success "});
+        res.json({msg: "Cancel job success "});
 
     } catch (error) {
         console.log(error);
